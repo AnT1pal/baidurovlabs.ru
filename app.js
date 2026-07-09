@@ -164,12 +164,17 @@ document.addEventListener('DOMContentLoaded', () => {
         readBooksTableBody.innerHTML = '';
         data.books.read.forEach(book => {
           const row = document.createElement('tr');
+          const reviewText = book.review || '';
+          const downloadHtml = book.downloadUrl ? `<a href="${book.downloadUrl}" target="_blank" style="margin-left: 8px; font-size: 0.8rem; color: #2a4d7c; text-decoration: underline;">[Скачать]</a>` : '';
+          
           row.innerHTML = `
             <td><strong>${book.title}</strong></td>
             <td>${book.author || '—'}</td>
             <td class="rating">${book.rating || '☆☆☆☆☆'}</td>
-            <td>${book.downloadUrl ? `<a href="${book.downloadUrl}" target="_blank" style="color: #2a4d7c; text-decoration: underline;">Скачать</a>` : '—'}</td>
-            <td>${book.review || '—'}</td>
+            <td>
+              ${reviewText || (downloadHtml ? '' : '—')}
+              ${downloadHtml}
+            </td>
           `;
           readBooksTableBody.appendChild(row);
         });
@@ -180,12 +185,17 @@ document.addEventListener('DOMContentLoaded', () => {
         myBooksTableBody.innerHTML = '';
         data.books.mine.forEach(book => {
           const row = document.createElement('tr');
+          const reviewText = book.review || '';
+          const downloadHtml = book.downloadUrl ? `<a href="${book.downloadUrl}" target="_blank" style="margin-left: 8px; font-size: 0.8rem; color: #2a4d7c; text-decoration: underline;">[Скачать]</a>` : '';
+          
           row.innerHTML = `
             <td><strong>${book.title}</strong></td>
             <td>${book.author || '—'}</td>
             <td class="rating">${book.rating || '☆☆☆☆☆'}</td>
-            <td>${book.downloadUrl ? `<a href="${book.downloadUrl}" target="_blank" style="color: #2a4d7c; text-decoration: underline;">Скачать</a>` : '—'}</td>
-            <td>${book.review || '—'}</td>
+            <td>
+              ${reviewText || (downloadHtml ? '' : '—')}
+              ${downloadHtml}
+            </td>
           `;
           myBooksTableBody.appendChild(row);
         });
