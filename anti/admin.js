@@ -189,6 +189,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <label>Описание:</label>
           <textarea class="admin-textarea soft-desc">${item.description || ''}</textarea>
         </div>
+        <div class="admin-group" style="margin-bottom: 5px;">
+          <label>Ссылка на скачивание (Яндекс/Google Диск и т.д.):</label>
+          <input type="text" class="admin-input soft-download" value="${item.downloadUrl || ''}" placeholder="https://disk.yandex.ru/d/...">
+        </div>
         <div class="admin-group">
           <label>Теги (через запятую):</label>
           <input type="text" class="admin-input soft-tags" value="${item.tags ? item.tags.join(', ') : ''}" placeholder="КриптоПро CSP, Подпись">
@@ -223,6 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="admin-group" style="margin-bottom: 5px;">
           <label>Статус:</label>
           <input type="text" class="admin-input game-status" value="${game.status || ''}" placeholder="В разработке">
+        </div>
+        <div class="admin-group" style="margin-bottom: 5px;">
+          <label>Ссылка на скачивание:</label>
+          <input type="text" class="admin-input game-download" value="${game.downloadUrl || ''}" placeholder="https://disk.yandex.ru/d/...">
         </div>
         <div class="admin-group">
           <label>Жанр:</label>
@@ -259,6 +267,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="admin-group" style="margin-bottom: 5px;">
           <label>Оценка (звезды):</label>
           <input type="text" class="admin-input book-rating" value="${book.rating || '☆☆☆☆☆'}" placeholder="★★★★★ или ☆☆☆☆☆">
+        </div>
+        <div class="admin-group" style="margin-bottom: 5px;">
+          <label>Ссылка на скачивание / чтение:</label>
+          <input type="text" class="admin-input book-download" value="${book.downloadUrl || ''}" placeholder="https://disk.yandex.ru/d/...">
         </div>
         <div class="admin-group">
           <label>Мой отзыв / Заметки:</label>
@@ -309,22 +321,22 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   addSoftwareBtn.onclick = () => {
-    siteData.software.push({ title: 'Новый проект', lang: 'JS', badgeClass: 'badge-csharp', description: '', tags: [] });
+    siteData.software.push({ title: 'Новый проект', lang: 'JS', badgeClass: 'badge-csharp', description: '', tags: [], downloadUrl: '' });
     renderSoftwareEditor();
   };
 
   addGameBtn.onclick = () => {
-    siteData.games.push({ title: 'Новая игра', description: '', status: 'В разработке', genre: '' });
+    siteData.games.push({ title: 'Новая игра', description: '', status: 'В разработке', genre: '', downloadUrl: '' });
     renderGamesEditor();
   };
 
   addReadBookBtn.onclick = () => {
-    siteData.books.read.push({ title: 'Новая книга', author: '', rating: '☆☆☆☆☆', review: '' });
+    siteData.books.read.push({ title: 'Новая книга', author: '', rating: '☆☆☆☆☆', review: '', downloadUrl: '' });
     renderBooksEditor('read', readBooksEditorList);
   };
 
   addMyBookBtn.onclick = () => {
-    siteData.books.mine.push({ title: 'Новая книга', author: 'Павел Байдуров', rating: '☆☆☆☆☆', review: '' });
+    siteData.books.mine.push({ title: 'Новая книга', author: 'Павел Байдуров', rating: '☆☆☆☆☆', review: '', downloadUrl: '' });
     renderBooksEditor('mine', myBooksEditorList);
   };
 
@@ -358,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lang: row.querySelector('.soft-lang').value.trim(),
         badgeClass: 'badge-csharp', // по умолчанию
         description: row.querySelector('.soft-desc').value.trim(),
+        downloadUrl: row.querySelector('.soft-download').value.trim(),
         tags: tagsArr
       };
     });
@@ -368,7 +381,8 @@ document.addEventListener('DOMContentLoaded', () => {
       title: row.querySelector('.game-title').value.trim(),
       description: row.querySelector('.game-desc').value.trim(),
       status: row.querySelector('.game-status').value.trim(),
-      genre: row.querySelector('.game-genre').value.trim()
+      genre: row.querySelector('.game-genre').value.trim(),
+      downloadUrl: row.querySelector('.game-download').value.trim()
     }));
 
     // Собираем книги
@@ -377,6 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title: row.querySelector('.book-title').value.trim(),
       author: row.querySelector('.book-author').value.trim(),
       rating: row.querySelector('.book-rating').value.trim(),
+      downloadUrl: row.querySelector('.book-download').value.trim(),
       review: row.querySelector('.book-review').value.trim()
     }));
 
@@ -385,6 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title: row.querySelector('.book-title').value.trim(),
       author: row.querySelector('.book-author').value.trim(),
       rating: row.querySelector('.book-rating').value.trim(),
+      downloadUrl: row.querySelector('.book-download').value.trim(),
       review: row.querySelector('.book-review').value.trim()
     }));
 
