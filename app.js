@@ -119,6 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
           <h3>${item.title}</h3>
           <span class="badge ${item.badgeClass || 'badge-csharp'}">${item.lang}</span>
           <p>${item.description}</p>
+          ${item.downloadUrl ? `
+            <div style="margin-top: 10px; margin-bottom: 10px;">
+              <a href="${item.downloadUrl}" target="_blank" class="classic-button" style="text-decoration: none; display: inline-block;">Скачать</a>
+            </div>
+          ` : ''}
           <div class="card-footer">
             ${item.tags ? item.tags.map(tag => `<span class="tech-tag">${tag}</span>`).join('') : ''}
           </div>
@@ -137,10 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="game-info">
             <h3>${game.title}</h3>
             <p class="game-desc">${game.description}</p>
-            <div class="game-meta">
+            <div class="game-meta" style="margin-bottom: 10px;">
               <span><strong>Статус:</strong> ${game.status}</span>
               <span><strong>Жанр:</strong> ${game.genre}</span>
             </div>
+            ${game.downloadUrl ? `
+              <div>
+                <a href="${game.downloadUrl}" target="_blank" class="classic-button" style="text-decoration: none; display: inline-block;">Скачать</a>
+              </div>
+            ` : ''}
           </div>
         `;
         gamesList.appendChild(item);
@@ -156,9 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const row = document.createElement('tr');
           row.innerHTML = `
             <td><strong>${book.title}</strong></td>
-            <td>${book.author}</td>
-            <td class="rating">${book.rating}</td>
-            <td>${book.review}</td>
+            <td>${book.author || '—'}</td>
+            <td class="rating">${book.rating || '☆☆☆☆☆'}</td>
+            <td>${book.downloadUrl ? `<a href="${book.downloadUrl}" target="_blank" style="color: #2a4d7c; text-decoration: underline;">Скачать</a>` : '—'}</td>
+            <td>${book.review || '—'}</td>
           `;
           readBooksTableBody.appendChild(row);
         });
@@ -171,9 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const row = document.createElement('tr');
           row.innerHTML = `
             <td><strong>${book.title}</strong></td>
-            <td>${book.author}</td>
-            <td class="rating">${book.rating}</td>
-            <td>${book.review}</td>
+            <td>${book.author || '—'}</td>
+            <td class="rating">${book.rating || '☆☆☆☆☆'}</td>
+            <td>${book.downloadUrl ? `<a href="${book.downloadUrl}" target="_blank" style="color: #2a4d7c; text-decoration: underline;">Скачать</a>` : '—'}</td>
+            <td>${book.review || '—'}</td>
           `;
           myBooksTableBody.appendChild(row);
         });
