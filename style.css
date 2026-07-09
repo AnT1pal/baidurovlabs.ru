@@ -1,0 +1,562 @@
+/* Общие стили в духе ПО 2010-х годов */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 !important; /* Углы строго острые */
+}
+
+body {
+  background-color: #d4d0c8; /* Классический серый цвет фона Windows Classic */
+  background-image: radial-gradient(#a0a0a0 1px, transparent 1px);
+  background-size: 16px 16px; /* Легкая сетка на фоне */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333333;
+  padding: 2vh 1vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden; /* Скрываем общий скролл страницы на десктопе */
+}
+
+/* Главный контейнер (под стиль приложения) */
+.desktop-container {
+  width: 98vw;
+  max-width: 1200px;
+  height: 95vh;
+  background-color: #f0f0f0;
+  border: 2px solid #808080;
+  box-shadow: 4px 4px 0px #404040; /* Тень в стиле 2.5D */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Контейнер сам по себе не скроллится */
+}
+
+/* Заголовок окна */
+.window-header {
+  background: linear-gradient(to right, #3a6ea5, #6b9ac4); /* Градиент в стиле Windows 7 / XP */
+  color: #ffffff;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #808080;
+}
+
+.profile-area {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.gif-container {
+  width: 80px;
+  height: 80px;
+  border: 3px double #ffffff;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#profile-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated; /* Подчеркиваем пиксельность гифки */
+}
+
+.title-container h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #000000;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #d0e0f0;
+  margin-top: 2px;
+}
+
+.sys-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85rem;
+  color: #f0f0f0;
+}
+
+/* Навигационная панель с вкладками */
+.navigation-bar {
+  background-color: #e0e0e0;
+  display: flex;
+  border-bottom: 2px solid #808080;
+  padding-left: 10px;
+}
+
+.nav-tab {
+  background-color: #d8d8d8;
+  color: #555555;
+  border: 1px solid #808080;
+  border-bottom: none;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 4px;
+  margin-top: 5px;
+  position: relative;
+  top: 1px;
+  transition: background-color 0.1s, color 0.1s;
+}
+
+.nav-tab:hover {
+  background-color: #e8e8e8;
+  color: #000000;
+}
+
+.nav-tab.active {
+  background-color: #f0f0f0;
+  color: #000000;
+  border-top: 2px solid #3a6ea5;
+  border-bottom: 2px solid #f0f0f0; /* Перекрывает нижнюю рамку панели */
+  top: 2px;
+  z-index: 10;
+}
+
+/* Главное окно контента */
+.content-window {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f0f0f0;
+  border-bottom: 2px solid #808080;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  color: #333333;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #c0c0c0;
+  padding-bottom: 5px;
+  font-weight: bold;
+}
+
+/* Блог */
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.blog-post {
+  background-color: #ffffff;
+  border: 1px solid #a0a0a0;
+  padding: 15px;
+  box-shadow: 2px 2px 0px #c0c0c0;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px dashed #d0d0d0;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.post-header h3 {
+  font-size: 1.1rem;
+  color: #2a4d7c;
+}
+
+.post-date {
+  font-size: 0.8rem;
+  color: #777777;
+  font-family: Georgia, serif;
+}
+
+.blog-post p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+/* Мое ПО */
+.software-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .software-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.software-card {
+  background-color: #ffffff;
+  border: 1px solid #a0a0a0;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.software-card h3 {
+  font-size: 1.1rem;
+  color: #2a4d7c;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #ffffff;
+  align-self: flex-start;
+}
+
+.badge-csharp { background-color: #178600; }
+.badge-go { background-color: #00add8; color: #333; }
+
+.software-card p {
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: #444444;
+}
+
+.card-footer {
+  margin-top: auto;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.tech-tag {
+  background-color: #e8e8e8;
+  border: 1px solid #c0c0c0;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  color: #555555;
+}
+
+/* Мои игры */
+.games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.game-item {
+  background-color: #ffffff;
+  border: 1px solid #a0a0a0;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .game-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.game-desc {
+  font-size: 0.9rem;
+  color: #444444;
+}
+
+.game-meta {
+  font-size: 0.8rem;
+  color: #666666;
+  display: flex;
+  gap: 15px;
+}
+
+.action-btn {
+  background: linear-gradient(to bottom, #7aa1d2, #3f729b);
+  color: #ffffff;
+  border: 1px solid #2a4d7c;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #202020;
+}
+
+.action-btn:hover {
+  background: linear-gradient(to bottom, #8db4e5, #4682b4);
+}
+
+.action-btn:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+/* Книги */
+.books-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border: 1px solid #a0a0a0;
+}
+
+.books-table th, .books-table td {
+  border: 1px solid #c0c0c0;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.books-table th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  color: #333333;
+}
+
+.books-table tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+.rating {
+  color: #d4a373;
+  font-size: 1rem;
+}
+
+/* Контакты */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.setup-guide-box {
+  background-color: #fff9db;
+  border: 1px solid #eedc82;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setup-guide-box h4 {
+  font-size: 0.88rem;
+  color: #856404;
+}
+
+.guide-text {
+  font-size: 0.8rem;
+  color: #856404;
+}
+
+#script-url-input {
+  width: 100%;
+  padding: 6px;
+  font-size: 0.8rem;
+  border: 1px solid #a0a0a0;
+  background-color: #ffffff;
+}
+
+.classic-btn {
+  background: #f0f0f0;
+  border: 1px solid #808080;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.classic-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.classic-form {
+  background-color: #ffffff;
+  border: 1px solid #a0a0a0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 2px 2px 0px #c0c0c0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #444444;
+}
+
+.form-group input, .form-group textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.9rem;
+  border: 1px solid #a0a0a0;
+  background-color: #fafafa;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  outline: 2px solid #3a6ea5;
+  background-color: #ffffff;
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.submit-btn {
+  background: linear-gradient(to bottom, #ffffff 0%, #e1e1e1 100%);
+  border: 1px solid #808080;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 1px 1px 0px #808080;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(to bottom, #f0f0f0 0%, #d0d0d0 100%);
+}
+
+.submit-btn:active {
+  box-shadow: none;
+  transform: translate(1px, 1px);
+}
+
+.form-status-msg {
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.form-status-msg.success {
+  color: #2e7d32;
+}
+
+.form-status-msg.error {
+  color: #c62828;
+}
+
+/* Статус-бар подвала */
+.window-footer {
+  background-color: #e0e0e0;
+  border-top: 1px solid #808080;
+  padding: 4px 10px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #555555;
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+.status-right {
+  display: flex;
+  gap: 15px;
+}
+
+/* Адаптивный контейнер для таблиц */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #a0a0a0;
+  background-color: #ffffff;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+    overflow: auto; /* Позволяем общий скролл на мобильном */
+  }
+
+  .desktop-container {
+    width: 100vw;
+    height: auto; /* На мобильном контент растягивает контейнер по вертикали */
+    min-height: 100vh;
+    box-shadow: none;
+    border: none;
+  }
+
+  .window-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .sys-info {
+    align-items: flex-start;
+    border-top: 1px dashed rgba(255, 255, 255, 0.3);
+    padding-top: 5px;
+    width: 100%;
+  }
+
+  .navigation-bar {
+    overflow-x: auto; /* Горизонтальный скролл вкладок */
+    white-space: nowrap;
+    padding-left: 5px;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-wrap: nowrap; /* Не даем переноситься на новую строку */
+  }
+
+  .nav-tab {
+    flex: 0 0 auto;
+    margin-top: 3px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .content-window {
+    padding: 12px;
+    overflow-y: visible; /* Отключаем независимый скролл для плавности на мобильном */
+  }
+
+  .blog-post p {
+    text-align: left;
+  }
+}
+
