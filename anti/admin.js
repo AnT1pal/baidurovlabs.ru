@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain'
         },
         body: JSON.stringify({
           action: 'login',
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain'
         },
         body: JSON.stringify({
           action: 'save',
