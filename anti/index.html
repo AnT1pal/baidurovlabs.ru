@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Управление системой - Pavel Baidurov</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* Дополнительные стили для админки */
+    .admin-window {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #f0f0f0;
+      border: 2px solid #808080;
+      box-shadow: 4px 4px 0px #404040;
+    }
+    .admin-form-container {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .admin-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .admin-group label {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #333;
+    }
+    .admin-input, .admin-textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #808080;
+      font-family: inherit;
+      background: #fafafa;
+    }
+    .admin-input:focus, .admin-textarea:focus {
+      outline: 2px solid #3a6ea5;
+      background: #fff;
+    }
+    .dashboard-panel {
+      display: none;
+      padding: 20px;
+    }
+    .dashboard-panel.active {
+      display: block;
+    }
+    .section-editor {
+      background: #ffffff;
+      border: 1px solid #a0a0a0;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 2px 2px 0px #c0c0c0;
+    }
+    .section-editor h3 {
+      font-size: 1.1rem;
+      color: #2a4d7c;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed #c0c0c0;
+      padding-bottom: 5px;
+    }
+    .row-editor {
+      border: 1px solid #e0e0e0;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+    }
+    .row-editor-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .classic-button {
+      background: linear-gradient(to bottom, #ffffff 0%, #e1e1e1 100%);
+      border: 1px solid #808080;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 1px 1px 0px #808080;
+    }
+    .classic-button:hover {
+      background: linear-gradient(to bottom, #f0f0f0 0%, #d0d0d0 100%);
+    }
+    .classic-button:active {
+      box-shadow: none;
+      transform: translate(1px, 1px);
+    }
+    .danger-button {
+      background: linear-gradient(to bottom, #ff9999 0%, #cc0000 100%);
+      color: white;
+      border: 1px solid #990000;
+    }
+    .danger-button:hover {
+      background: linear-gradient(to bottom, #ff6666 0%, #990000 100%);
+    }
+    .success-button {
+      background: linear-gradient(to bottom, #99ff99 0%, #009900 100%);
+      color: white;
+      border: 1px solid #006600;
+    }
+    .success-button:hover {
+      background: linear-gradient(to bottom, #66ff66 0%, #006600 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-window">
+    <!-- Заголовок Окна -->
+    <header class="window-header">
+      <div class="profile-area">
+        <h1>Служба администрирования</h1>
+      </div>
+      <div class="sys-info">
+        <span id="sys-clock">00:00:00</span>
+      </div>
+    </header>
+
+    <!-- Окно авторизации -->
+    <div id="login-screen" class="admin-form-container">
+      <h2 style="font-size: 1.2rem; border-bottom: 2px solid #808080; padding-bottom: 5px; margin-bottom: 10px;">Вход в систему</h2>
+      <div class="admin-group">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" class="admin-input" placeholder="Введите логин...">
+      </div>
+      <div class="admin-group">
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" class="admin-input" placeholder="Введите пароль...">
+      </div>
+      <button id="login-btn" class="classic-button" style="margin-top: 10px; align-self: flex-start;">Войти в панель</button>
+      <div id="login-status" style="font-weight: bold; margin-top: 10px; color: #c62828;"></div>
+    </div>
+
+    <!-- Панель управления (после успешного логина) -->
+    <div id="admin-dashboard" class="dashboard-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #808080; padding-bottom: 10px;">
+        <h2>Редактор содержимого сайта</h2>
+        <div>
+          <button id="save-all-btn" class="classic-button success-button">Сохранить всё</button>
+          <button id="logout-btn" class="classic-button danger-button">Выйти</button>
+        </div>
+      </div>
+
+      <div id="dashboard-status" style="font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+
+      <div class="content-editor-layout" style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Редактор Профиля -->
+        <div class="section-editor">
+          <h3>Настройки заголовка</h3>
+          <div class="admin-group">
+            <label for="edit-subtitle">Подзаголовок:</label>
+            <input type="text" id="edit-subtitle" class="admin-input">
+          </div>
+        </div>
+
+        <!-- Редактор Блога -->
+        <div class="section-editor">
+          <h3>Раздел «Блог»</h3>
+          <div id="blog-editor-list"></div>
+          <button id="add-blog-btn" class="classic-button">Добавить запись</button>
+        </div>
+
+        <!-- Редактор ПО -->
+        <div class="section-editor">
+          <h3>Раздел «Мое ПО»</h3>
+          <div id="software-editor-list"></div>
+          <button id="add-software-btn" class="classic-button">Добавить проект</button>
+        </div>
+
+        <!-- Редактор Игр -->
+        <div class="section-editor">
+          <h3>Раздел «Мои игры»</h3>
+          <div id="games-editor-list"></div>
+          <button id="add-game-btn" class="classic-button">Добавить игру</button>
+        </div>
+
+        <!-- Редактор Книг (Прочитанные) -->
+        <div class="section-editor">
+          <h3>Раздел «Прочитанные книги»</h3>
+          <div id="read-books-editor-list"></div>
+          <button id="add-read-book-btn" class="classic-button">Добавить прочитанную книгу</button>
+        </div>
+
+        <!-- Редактор Книг (Мои) -->
+        <div class="section-editor">
+          <h3>Раздел «Мои книги»</h3>
+          <div id="my-books-editor-list"></div>
+          <button id="add-my-book-btn" class="classic-button">Добавить мою книгу</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="window-footer">
+      <div class="status-left">Защищенное соединение (SSL)</div>
+      <div class="status-right">
+        <span>Admin Mode</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
