@@ -3,51 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Управление системой - Pavel Baidurov</title>
+  <title>Панель управления - baidurovlabs.ru</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="icon" type="image/png" href="../favicon.png">
   <style>
     /* Дополнительные стили для админки */
-    .admin-window {
-      max-width: 800px;
-      margin: 40px auto;
-      background: #f0f0f0;
-      border: 2px solid #808080;
-      box-shadow: 4px 4px 0px #404040;
-    }
     .admin-form-container {
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      background: #f0f0f0;
+      border: 1px solid #808080;
+      box-shadow: 2px 2px 0px #404040;
+      padding: 20px;
     }
     .admin-group {
       display: flex;
       flex-direction: column;
       gap: 5px;
+      margin-bottom: 12px;
     }
     .admin-group label {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: bold;
       color: #333;
     }
-    .admin-input, .admin-textarea {
+    .admin-input, .admin-textarea, .admin-select {
       width: 100%;
-      padding: 8px;
+      padding: 6px;
       border: 1px solid #808080;
       font-family: inherit;
+      font-size: 0.9rem;
       background: #fafafa;
     }
-    .admin-input:focus, .admin-textarea:focus {
+    .admin-input:focus, .admin-textarea:focus, .admin-select:focus {
       outline: 2px solid #3a6ea5;
       background: #fff;
-    }
-    .dashboard-panel {
-      display: none;
-      padding: 20px;
-    }
-    .dashboard-panel.active {
-      display: block;
     }
     .section-editor {
       background: #ffffff;
@@ -57,7 +45,7 @@
       box-shadow: 2px 2px 0px #c0c0c0;
     }
     .section-editor h3 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #2a4d7c;
       margin-bottom: 12px;
       border-bottom: 1px dashed #c0c0c0;
@@ -65,9 +53,10 @@
     }
     .row-editor {
       border: 1px solid #e0e0e0;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 12px;
+      margin-bottom: 15px;
       background: #f9f9f9;
+      box-shadow: 1px 1px 0px #e0e0e0;
     }
     .row-editor-controls {
       display: flex;
@@ -78,8 +67,8 @@
     .classic-button {
       background: linear-gradient(to bottom, #ffffff 0%, #e1e1e1 100%);
       border: 1px solid #808080;
-      padding: 8px 16px;
-      font-size: 0.9rem;
+      padding: 6px 12px;
+      font-size: 0.85rem;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 1px 1px 0px #808080;
@@ -107,101 +96,141 @@
     .success-button:hover {
       background: linear-gradient(to bottom, #66ff66 0%, #006600 100%);
     }
+    
+    #admin-dashboard {
+      display: none;
+      height: 100%;
+    }
+    #admin-dashboard.active {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .tab-content {
+      display: none;
+      height: 100%;
+    }
+    .tab-content.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <div class="admin-window">
-    <!-- Заголовок Окна -->
+  <div class="desktop-container">
+    <!-- Верхняя панель заголовка (в стиле системного окна 2010-х) -->
     <header class="window-header">
       <div class="profile-area">
-        <h1>Служба администрирования</h1>
+        <div class="gif-container">
+          <img src="../animation.gif" alt="Аватарка" class="avatar-gif">
+        </div>
+        <div class="title-container">
+          <h1>Система администрирования</h1>
+          <p class="subtitle">Управление содержимым baidurovlabs.ru</p>
+        </div>
       </div>
       <div class="sys-info">
         <span id="sys-clock">00:00:00</span>
+        <span class="sys-tag">v1.0.0-admin</span>
       </div>
     </header>
 
     <!-- Окно авторизации -->
-    <div id="login-screen" class="admin-form-container">
-      <h2 style="font-size: 1.2rem; border-bottom: 2px solid #808080; padding-bottom: 5px; margin-bottom: 10px;">Вход в систему</h2>
-      <div class="admin-group">
-        <label for="username">Имя пользователя:</label>
-        <input type="text" id="username" class="admin-input" placeholder="Введите логин...">
+    <div id="login-screen" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; align-items: center; justify-content: center;">
+      <div class="admin-form-container" style="width: 100%; max-width: 360px;">
+        <h2 style="font-size: 1.1rem; border-bottom: 2px solid #808080; padding-bottom: 5px; margin-bottom: 15px; color: #2a4d7c;">Авторизация</h2>
+        <div class="admin-group">
+          <label for="username">Имя пользователя:</label>
+          <input type="text" id="username" class="admin-input" placeholder="Введите логин...">
+        </div>
+        <div class="admin-group">
+          <label for="password">Пароль:</label>
+          <input type="password" id="password" class="admin-input" placeholder="Введите пароль...">
+        </div>
+        <button id="login-btn" class="classic-button" style="margin-top: 10px; width: 100%;">Войти</button>
+        <div id="login-status" style="font-weight: bold; margin-top: 12px; text-align: center; color: #c62828;"></div>
       </div>
-      <div class="admin-group">
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" class="admin-input" placeholder="Введите пароль...">
-      </div>
-      <button id="login-btn" class="classic-button" style="margin-top: 10px; align-self: flex-start;">Войти в панель</button>
-      <div id="login-status" style="font-weight: bold; margin-top: 10px; color: #c62828;"></div>
     </div>
 
     <!-- Панель управления (после успешного логина) -->
-    <div id="admin-dashboard" class="dashboard-panel">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #808080; padding-bottom: 10px;">
-        <h2>Редактор содержимого сайта</h2>
-        <div>
-          <button id="save-all-btn" class="classic-button success-button">Сохранить всё</button>
-          <button id="logout-btn" class="classic-button danger-button">Выйти</button>
+    <div id="admin-dashboard">
+      <!-- Навигация с табами -->
+      <nav class="navigation-bar" style="justify-content: space-between; display: flex; align-items: center; width: 100%;">
+        <div style="display: flex;" id="admin-tabs">
+          <button class="nav-tab active" data-tab="profile">Профиль</button>
+          <button class="nav-tab" data-tab="blog">Блог</button>
+          <button class="nav-tab" data-tab="software">Мое ПО</button>
+          <button class="nav-tab" data-tab="games">Мои игры</button>
+          <button class="nav-tab" data-tab="books">Книги</button>
         </div>
-      </div>
+        <div style="display: flex; gap: 5px; padding-right: 5px;" class="admin-controls-nav">
+          <button id="save-all-btn" class="classic-button success-button" style="padding: 3px 8px; font-size: 0.75rem; margin-top: 3px;">Сохранить всё</button>
+          <button id="logout-btn" class="classic-button danger-button" style="padding: 3px 8px; font-size: 0.75rem; margin-top: 3px;">Выйти</button>
+        </div>
+      </nav>
 
-      <div id="dashboard-status" style="font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+      <!-- Рабочая область редактирования -->
+      <div class="content-window" style="flex: 1; overflow-y: auto;">
+        <div id="dashboard-status" style="font-weight: bold; margin-bottom: 15px; text-align: center; font-size: 0.9rem;"></div>
 
-      <div class="content-editor-layout" style="display: flex; flex-direction: column; gap: 20px;">
-        
-        <!-- Редактор Профиля -->
-        <div class="section-editor">
-          <h3>Настройки заголовка</h3>
-          <div class="admin-group">
-            <label for="edit-subtitle">Подзаголовок:</label>
-            <input type="text" id="edit-subtitle" class="admin-input">
+        <!-- Вкладка: Профиль -->
+        <section id="tab-profile" class="tab-content active">
+          <div class="section-editor">
+            <h3>Настройки заголовка</h3>
+            <div class="admin-group">
+              <label for="edit-subtitle">Подзаголовок главной страницы:</label>
+              <input type="text" id="edit-subtitle" class="admin-input">
+            </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Редактор Блога -->
-        <div class="section-editor">
-          <h3>Раздел «Блог»</h3>
-          <div id="blog-editor-list"></div>
-          <button id="add-blog-btn" class="classic-button">Добавить запись</button>
-        </div>
+        <!-- Вкладка: Блог -->
+        <section id="tab-blog" class="tab-content">
+          <div class="section-editor">
+            <h3>Управление записями в блоге</h3>
+            <div id="blog-editor-list"></div>
+            <button id="add-blog-btn" class="classic-button">Добавить запись</button>
+          </div>
+        </section>
 
-        <!-- Редактор ПО -->
-        <div class="section-editor">
-          <h3>Раздел «Мое ПО»</h3>
-          <div id="software-editor-list"></div>
-          <button id="add-software-btn" class="classic-button">Добавить проект</button>
-        </div>
+        <!-- Вкладка: Мое ПО -->
+        <section id="tab-software" class="tab-content">
+          <div class="section-editor">
+            <h3>Управление программами</h3>
+            <div id="software-editor-list"></div>
+            <button id="add-software-btn" class="classic-button">Добавить проект</button>
+          </div>
+        </section>
 
-        <!-- Редактор Игр -->
-        <div class="section-editor">
-          <h3>Раздел «Мои игры»</h3>
-          <div id="games-editor-list"></div>
-          <button id="add-game-btn" class="classic-button">Добавить игру</button>
-        </div>
+        <!-- Вкладка: Мои игры -->
+        <section id="tab-games" class="tab-content">
+          <div class="section-editor">
+            <h3>Управление играми</h3>
+            <div id="games-editor-list"></div>
+            <button id="add-game-btn" class="classic-button">Добавить игру</button>
+          </div>
+        </section>
 
-        <!-- Редактор Книг (Прочитанные) -->
-        <div class="section-editor">
-          <h3>Раздел «Прочитанные книги»</h3>
-          <div id="read-books-editor-list"></div>
-          <button id="add-read-book-btn" class="classic-button">Добавить прочитанную книгу</button>
-        </div>
-
-        <!-- Редактор Книг (Мои) -->
-        <div class="section-editor">
-          <h3>Раздел «Мои книги»</h3>
-          <div id="my-books-editor-list"></div>
-          <button id="add-my-book-btn" class="classic-button">Добавить мою книгу</button>
-        </div>
-
+        <!-- Вкладка: Книги -->
+        <section id="tab-books" class="tab-content">
+          <div class="section-editor">
+            <h3>Прочитанные книги</h3>
+            <div id="read-books-editor-list"></div>
+            <button id="add-read-book-btn" class="classic-button">Добавить прочитанную книгу</button>
+          </div>
+          <div class="section-editor">
+            <h3>Мои книги</h3>
+            <div id="my-books-editor-list"></div>
+            <button id="add-my-book-btn" class="classic-button">Добавить мою книгу</button>
+          </div>
+        </section>
       </div>
     </div>
 
-    <!-- Подвал -->
+    <!-- Подвал страницы (Статус-бар) -->
     <footer class="window-footer">
-      <div class="status-left">Защищенное соединение (SSL)</div>
+      <div class="status-left" id="admin-status-bar-text">Защищенное соединение (Google Apps Script Web App)</div>
       <div class="status-right">
-        <span>Admin Mode</span>
+        <span>🔒 Admin Mode</span>
       </div>
     </footer>
   </div>

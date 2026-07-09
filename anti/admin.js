@@ -420,4 +420,22 @@ document.addEventListener('DOMContentLoaded', () => {
       dashboardStatus.style.color = '#c62828';
     }
   });
+
+  // 5. Логика переключения вкладок админки (Tabs)
+  const adminTabs = document.querySelectorAll('#admin-tabs .nav-tab');
+  const adminContents = document.querySelectorAll('#admin-dashboard .tab-content');
+
+  adminTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      adminTabs.forEach(t => t.classList.remove('active'));
+      adminContents.forEach(c => c.classList.remove('active'));
+
+      tab.classList.add('active');
+      const targetId = `tab-${tab.getAttribute('data-tab')}`;
+      const targetContent = document.getElementById(targetId);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+    });
+  });
 });
