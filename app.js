@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       });
 
-      formStatus.textContent = '✅ Сообщение отправлено! (Запрос передан в Google Apps Script)';
+      formStatus.textContent = '✅ Сообщение отправлено!';
       formStatus.className = 'form-status-msg success';
       contactForm.reset();
 
