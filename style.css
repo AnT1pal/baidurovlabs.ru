@@ -582,19 +582,23 @@ body {
   }
 
   .navigation-bar {
-    overflow-x: auto; /* Горизонтальный скролл вкладок */
-    white-space: nowrap;
-    padding-left: 5px;
-    -webkit-overflow-scrolling: touch;
     display: flex;
-    flex-wrap: nowrap; /* Не даем переноситься на новую строку */
+    flex-wrap: nowrap;
+    overflow-x: hidden; /* Убираем скролл */
+    width: 100%;
+    padding: 0;
+    justify-content: space-between;
   }
 
   .nav-tab {
-    flex: 0 0 auto;
+    flex: 1; /* Распределяем табы поровну по всей ширине */
+    text-align: center;
     margin-top: 3px;
-    padding: 8px 12px;
-    font-size: 0.8rem;
+    padding: 8px 2px; /* Минимальные отступы по бокам */
+    font-size: 0.72rem; /* Уменьшаем шрифт, чтобы влезло на узких экранах */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .content-window {
@@ -604,6 +608,26 @@ body {
 
   .blog-post p {
     text-align: left;
+  }
+
+  /* Дополнительные стили для админки на мобильном */
+  #admin-tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .admin-controls-nav {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    padding: 4px 5px;
+    background-color: #d8d8d8;
+    border-top: 1px solid #808080;
+  }
+
+  .desktop-container .navigation-bar {
+    flex-wrap: wrap !important;
   }
 }
 
