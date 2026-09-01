@@ -42,6 +42,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Текущая страница блога. Записей на странице — пять; всё, что дальше,
+  // прячется за перелистыванием, иначе главная растёт без конца.
+  let blogPage = 1;
+
+  function driveFileId(url) {
+    const m = String(url).match(/(?:googleusercontent\.com\/d\/|[?&]id=|\/file\/d\/)([-\w]{20,})/);
+    return m ? m[1] : '';
+  }
+
+  // Перелистывание страниц. Вид взят у остальных кнопок сайта (.classic-btn),
+  // чтобы не выбиваться из общего оформления.
+  function renderBlogPager(container, pages, data) {
+    const old = document.getElementById('blog-pager');
+    if (old) old.remove();
+    if (pages <= 1) return;
+
+    const pager = document.createElement('div');
+    pager.id = 'blog-pager';
+    pager.style.cssText =
+      'display: flex; justify-content: center; align-items: center; gap: 8px; ' +
+      'margin-top: 20px; padding-top: 15px; border-top: 1px solid #c0c0c0;';
+
+    const mkBtn = (label, targetPage, disabled) => {
+      const b = document.createElement('button');
+      b.className = 'classic-btn';
+      b.textContent = label;
+      b.style.alignSelf = 'auto';
+      if (disabled) {
+        b.disabled = true;
+        b.style.color = '#a0a0a0';
+        b.style.cursor = 'default';
+      } else {
+        b.onclick = () => {
+          blogPage = targetPage;
+          renderSiteData(data);
+          container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+      }
+      return b;
+    };
+
+    pager.appendChild(mkBtn('◄ Назад', blogPage - 1, blogPage <= 1));
+
+    const label = document.createElement('span');
+    label.textContent = `Страница ${blogPage} из ${pages}`;
+    label.style.cssText = 'font-size: 0.8rem; color: #404040; padding: 0 6px;';
+    pager.appendChild(label);
+
+    pager.appendChild(mkBtn('Вперёд ►', blogPage + 1, blogPage >= pages));
+
+    container.parentNode.appendChild(pager);
+  }
+
   // Метод динамического рендеринга данных на страницу
   function renderSiteData(data) {
     if (data.profile && data.profile.subtitle) {
@@ -50,8 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const blogPostsContainer = document.querySelector('#tab-blog .blog-posts');
     if (blogPostsContainer && data.blog) {
+      // Записи без текста и медиа отсекаем заранее: они не должны занимать
+      // место на странице и сбивать счёт страниц.
+      const posts = data.blog.filter(p =>
+        ((p.mediaUrl || p.image || '').trim() !== '') || ((p.text || '').trim() !== ''));
+
+      const perPage = 5;
+      const pages = Math.max(1, Math.ceil(posts.length / perPage));
+      if (blogPage > pages) blogPage = pages;
+
       blogPostsContainer.innerHTML = '';
-      data.blog.forEach(post => {
+      posts.slice((blogPage - 1) * perPage, blogPage * perPage).forEach(post => {
         const postElement = document.createElement('article');
         postElement.className = 'blog-post';
         postElement.style.cssText = 'display: flex; flex-direction: column; align-items: center; text-align: center;';
@@ -61,9 +123,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const mediaUrl = post.mediaUrl || post.image || '';
 
         if (mediaType === 'image' && mediaUrl) {
+          // Картинки из Google Drive отдаются по двум разным адресам, и какой
+          // из них жив — со временем меняется. Если первый не открылся,
+          // подставляем второй; для обычных ссылок и файлов из репозитория
+          // запасной адрес не строится и ничего не меняется.
+          const driveId = driveFileId(mediaUrl);
+          const fallback = driveId
+            ? `https://drive.google.com/thumbnail?id=${driveId}&sz=w2000`
+            : '';
+          const onErr = fallback
+            ? ` onerror="if(this.dataset.retry!=='1'){this.dataset.retry='1';this.src='${fallback}';}"`
+            : '';
           mediaHtml = `
             <div class="blog-image-container">
-              <img src="${mediaUrl}" alt="Изображение блога" id="blog-image" style="max-width: 100%; max-height: 70vh; height: auto; border: 1px solid #808080;">
+              <img src="${mediaUrl}" alt="Изображение блога" id="blog-image"${onErr} style="max-width: 100%; max-height: 70vh; height: auto; border: 1px solid #808080;">
             </div>
           `;
         } else if (mediaType === 'youtube' && mediaUrl) {
@@ -107,6 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         blogPostsContainer.appendChild(postElement);
       });
+
+      renderBlogPager(blogPostsContainer, pages, data);
     }
 
     const softwareGrid = document.querySelector('#tab-software .software-grid');

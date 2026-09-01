@@ -154,6 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
           <label>Ссылка / Имя файла медиа:</label>
           <input type="text" class="admin-input blog-media-url" value="${mediaUrl}" placeholder="Например: photo.jpg или https://vk.com/video_ext.php?...">
         </div>
+        <div class="form-row">
+          <label>Или загрузить картинку с компьютера:</label>
+          <input type="file" class="blog-file" accept="image/*" style="font-size: 0.8rem;">
+          <span class="blog-upload-status" style="font-size: 0.8rem; color: #404040;"></span>
+        </div>
         <div class="admin-group">
           <label>Текст поста:</label>
           <textarea class="admin-textarea blog-text" placeholder="Текст сообщения...">${post.text || ''}</textarea>
@@ -166,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     bindDeleteButtons();
+    bindBlogUploads();
   }
 
   // Редактор ПО
@@ -286,12 +292,76 @@ document.addEventListener('DOMContentLoaded', () => {
     bindDeleteButtons();
   }
 
+  // Загрузка картинки прямо из ЛК.
+  //
+  // Раньше картинку к записи можно было добавить только коммитом файла в
+  // репозиторий сайта. Теперь файл уходит в папку на Google Диске, а в поле
+  // адреса подставляется готовая ссылка.
+  function bindBlogUploads() {
+    document.querySelectorAll('.blog-file').forEach(input => {
+      input.onchange = async () => {
+        const row = input.closest('.row-editor');
+        const status = row.querySelector('.blog-upload-status');
+        const file = input.files && input.files[0];
+        if (!file) return;
+
+        if (file.size > 10 * 1024 * 1024) {
+          status.style.color = '#a02020';
+          status.textContent = 'Файл больше 10 МБ — уменьшите картинку.';
+          return;
+        }
+
+        status.style.color = '#404040';
+        status.textContent = 'Загрузка...';
+
+        try {
+          const dataBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result).split(',')[1]);
+            reader.onerror = () => reject(new Error('не удалось прочитать файл'));
+            reader.readAsDataURL(file);
+          });
+
+          const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+              action: 'upload',
+              token: sessionToken,
+              filename: file.name,
+              mimeType: file.type,
+              dataBase64: dataBase64
+            })
+          });
+          const result = await response.json();
+
+          if (result.status === 'success') {
+            row.querySelector('.blog-media-url').value = result.url;
+            row.querySelector('.blog-media-type').value = 'image';
+            status.style.color = '#207020';
+            status.textContent = 'Загружено. Не забудьте «Сохранить».';
+          } else {
+            status.style.color = '#a02020';
+            status.textContent = result.message || 'Загрузить не вышло.';
+          }
+        } catch (error) {
+          status.style.color = '#a02020';
+          status.textContent = 'Ошибка: ' + error.message;
+        }
+      };
+    });
+  }
+
   // Обработчик кнопок удаления
   function bindDeleteButtons() {
     document.querySelectorAll('.delete-row-btn').forEach(btn => {
       btn.onclick = (e) => {
         const index = parseInt(e.target.getAttribute('data-index'), 10);
         const type = e.target.getAttribute('data-type');
+
+        // Сначала забираем набранное, иначе удаление одной строки
+        // стирает правки во всех остальных.
+        collectFromDom();
 
         if (type === 'blog') {
           siteData.blog.splice(index, 1);
@@ -316,37 +386,46 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- ЛОГИКА ДОБАВЛЕНИЯ НОВЫХ ЭЛЕМЕНТОВ ---
 
   addBlogBtn.onclick = () => {
-    siteData.blog.push({ date: 'Сегодня', image: '', text: '' });
+    collectFromDom();
+    siteData.blog.push({
+      date: new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' }),
+      mediaType: 'none', mediaUrl: '', text: ''
+    });
     renderBlogEditor();
   };
 
   addSoftwareBtn.onclick = () => {
+    collectFromDom();
     siteData.software.push({ title: 'Новый проект', lang: 'JS', badgeClass: 'badge-csharp', description: '', tags: [], downloadUrl: '' });
     renderSoftwareEditor();
   };
 
   addGameBtn.onclick = () => {
+    collectFromDom();
     siteData.games.push({ title: 'Новая игра', description: '', status: 'В разработке', genre: '', downloadUrl: '' });
     renderGamesEditor();
   };
 
   addReadBookBtn.onclick = () => {
+    collectFromDom();
     siteData.books.read.push({ title: 'Новая книга', author: '', rating: '☆☆☆☆☆', review: '', downloadUrl: '' });
     renderBooksEditor('read', readBooksEditorList);
   };
 
   addMyBookBtn.onclick = () => {
+    collectFromDom();
     siteData.books.mine.push({ title: 'Новая книга', author: 'Павел Байдуров', rating: '☆☆☆☆☆', review: '', downloadUrl: '' });
     renderBooksEditor('mine', myBooksEditorList);
   };
 
-  // --- СОХРАНЕНИЕ ДАННЫХ НА СЕРВЕР ---
-
-  saveAllBtn.addEventListener('click', async () => {
-    dashboardStatus.textContent = '⚡ Сохранение...';
-    dashboardStatus.style.color = '#333';
-
-    // Собираем данные с форм обратно в объект siteData
+  // --- СБОР ДАННЫХ ИЗ ПОЛЕЙ ---
+  //
+  // Набранное живёт только в полях формы, а siteData обновляется отсюда.
+  // Раньше сбор был зашит внутрь кнопки «Сохранить», и любая перерисовка
+  // редактора (добавили запись, удалили соседнюю) затирала напечатанное
+  // старыми данными. Из-за этого новости уходили на сайт пустыми.
+  // Теперь сбор вызывается и перед каждой перерисовкой тоже.
+  function collectFromDom() {
     siteData.profile = {
       subtitle: editSubtitle.value.trim()
     };
@@ -403,6 +482,15 @@ document.addEventListener('DOMContentLoaded', () => {
       downloadUrl: row.querySelector('.book-download').value.trim(),
       review: row.querySelector('.book-review').value.trim()
     }));
+  }
+
+  // --- СОХРАНЕНИЕ ДАННЫХ НА СЕРВЕР ---
+
+  saveAllBtn.addEventListener('click', async () => {
+    dashboardStatus.textContent = '⚡ Сохранение...';
+    dashboardStatus.style.color = '#333';
+
+    collectFromDom();
 
     try {
       const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
