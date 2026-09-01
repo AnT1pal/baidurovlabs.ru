@@ -99,12 +99,21 @@
     
     #admin-dashboard {
       display: none;
-      height: 100%;
     }
     #admin-dashboard.active {
       display: flex;
       flex-direction: column;
-      height: 100%;
+      /* Было height: 100% — панель брала высоту всего окна, хотя стоит под
+         заголовком, и вылезала за нижний край контейнера. У контейнера
+         overflow: hidden, поэтому низ просто срезался вместе с концом
+         прокручиваемой области. Занимаем остаток места, а не всё окно. */
+      flex: 1;
+      min-height: 0;
+    }
+    /* Без min-height: 0 колонка на flex не даёт вложенной области сжаться
+       до размеров экрана, и прокрутка снова уезжает за край. */
+    #admin-dashboard .content-window {
+      min-height: 0;
     }
     .tab-content {
       display: none;
