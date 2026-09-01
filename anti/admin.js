@@ -154,9 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <label>Ссылка / Имя файла медиа:</label>
           <input type="text" class="admin-input blog-media-url" value="${mediaUrl}" placeholder="Например: photo.jpg или https://vk.com/video_ext.php?...">
         </div>
-        <div class="form-row">
+        <div class="admin-group" style="margin-bottom: 5px;">
           <label>Или загрузить картинку с компьютера:</label>
-          <input type="file" class="blog-file" accept="image/*" style="font-size: 0.8rem;">
+          <input type="file" class="blog-file" accept="image/*" style="font-size: 0.8rem; padding: 4px 0;">
           <span class="blog-upload-status" style="font-size: 0.8rem; color: #404040;"></span>
         </div>
         <div class="admin-group">
